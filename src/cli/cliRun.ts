@@ -43,6 +43,11 @@ const semanticSuggestionMap: Record<string, string[]> = {
   console: ['--stdout'],
   terminal: ['--stdout'],
   pipe: ['--stdin'],
+  forensics: ['--git-forensics'],
+  'git-analysis': ['--git-forensics', '--git-analyze'],
+  'commit-range': ['--git-range'],
+  'git-commits': ['--git-forensics'],
+  history: ['--include-logs', '--git-forensics'],
 };
 
 export const run = async () => {
@@ -137,6 +142,23 @@ export const run = async () => {
           return Number(v);
         },
       )
+      // Git Forensics Options
+      .option(
+        '--git-forensics',
+        'Enable git forensics mode with comprehensive commit analysis (includes graph, metadata, patches)',
+      )
+      .option(
+        '--git-range <range>',
+        'Commit range for forensics analysis (e.g., HEAD~20..HEAD, v1.0..v2.0, main..feature)',
+      )
+      .option(
+        '--git-detail-level <level>',
+        'Patch detail level: full (complete diffs), stat (file stats), files (names only), metadata (no diffs)',
+      )
+      .option('--git-analyze', 'Enable AI detection and regression analysis for commits')
+      .option('--git-no-graph', 'Disable commit graph visualization')
+      .option('--git-no-tags', 'Exclude git tags from output')
+      .option('--git-no-patches', 'Exclude per-commit patches from output')
       // File Selection Options
       .optionsGroup('File Selection Options')
       .option(

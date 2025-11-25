@@ -8,6 +8,7 @@ import { type FileSearchResult, listDirectories, listFiles, searchFiles } from '
 import { generateTreeString } from '../file/fileTreeGenerate.js';
 import type { ProcessedFile } from '../file/fileTypes.js';
 import type { GitDiffResult } from '../git/gitDiffHandle.js';
+import type { GitForensicsResult } from '../git/gitForensicsHandle.js';
 import type { GitLogResult } from '../git/gitLogHandle.js';
 import type { OutputGeneratorContext, RenderContext } from './outputGeneratorTypes.js';
 import { sortOutputFiles } from './outputSort.js';
@@ -55,6 +56,10 @@ const createRenderContext = (outputGeneratorContext: OutputGeneratorContext): Re
     gitLogEnabled: outputGeneratorContext.config.output.git?.includeLogs,
     gitLogContent: outputGeneratorContext.gitLogResult?.logContent,
     gitLogCommits: outputGeneratorContext.gitLogResult?.commits,
+    gitForensicsEnabled: outputGeneratorContext.config.output.git?.includeForensics ?? false,
+    gitForensicsSummary: outputGeneratorContext.gitForensicsResult?.summary,
+    gitForensicsGraph: outputGeneratorContext.gitForensicsResult?.graph,
+    gitForensicsCommits: outputGeneratorContext.gitForensicsResult?.commits,
   };
 };
 
@@ -152,6 +157,45 @@ const generateParsableJsonOutput = async (renderContext: RenderContext): Promise
         files: commit.files,
       })),
     }),
+    ...(renderContext.gitForensicsEnabled && {
+      gitForensics: {
+        summary: renderContext.gitForensicsSummary,
+        ...(renderContext.gitForensicsGraph && {
+          graph: {
+            commits: renderContext.gitForensicsGraph.commits,
+            asciiGraph: renderContext.gitForensicsGraph.graph,
+            mermaidGraph: renderContext.gitForensicsGraph.mermaidGraph,
+            mergeCommits: renderContext.gitForensicsGraph.mergeCommits,
+            tags: renderContext.gitForensicsGraph.tags,
+          },
+        }),
+        commits: renderContext.gitForensicsCommits?.map((commit) => ({
+          metadata: {
+            hash: commit.metadata.hash,
+            abbreviatedHash: commit.metadata.abbreviatedHash,
+            parents: commit.metadata.parents,
+            author: commit.metadata.author,
+            committer: commit.metadata.committer,
+            message: commit.metadata.message,
+            body: commit.metadata.body,
+            files: commit.metadata.files,
+          },
+          ...(commit.analysis && {
+            analysis: {
+              isAiGenerated: commit.analysis.isAiGenerated,
+              confidence: commit.analysis.confidence,
+              indicators: commit.analysis.indicators,
+              messageQuality: commit.analysis.messageQuality,
+              isPotentialRegression: commit.analysis.isPotentialRegression,
+              regressionIndicators: commit.analysis.regressionIndicators,
+            },
+          }),
+          ...(commit.patch && {
+            patch: commit.patch,
+          }),
+        })),
+      },
+    }),
     ...(renderContext.instruction && {
       instruction: renderContext.instruction,
     }),
@@ -225,6 +269,7 @@ export const generateOutput = async (
   allFilePaths: string[],
   gitDiffResult: GitDiffResult | undefined = undefined,
   gitLogResult: GitLogResult | undefined = undefined,
+  gitForensicsResult: GitForensicsResult | undefined = undefined,
   deps = {
     buildOutputGeneratorContext,
     generateHandlebarOutput,
@@ -243,6 +288,7 @@ export const generateOutput = async (
     sortedProcessedFiles,
     gitDiffResult,
     gitLogResult,
+    gitForensicsResult,
   );
   const renderContext = createRenderContext(outputGeneratorContext);
 
@@ -268,6 +314,7 @@ export const buildOutputGeneratorContext = async (
   processedFiles: ProcessedFile[],
   gitDiffResult: GitDiffResult | undefined = undefined,
   gitLogResult: GitLogResult | undefined = undefined,
+  gitForensicsResult: GitForensicsResult | undefined = undefined,
   deps = {
     listDirectories,
     listFiles,
@@ -347,5 +394,6 @@ export const buildOutputGeneratorContext = async (
     instruction: repositoryInstruction,
     gitDiffResult,
     gitLogResult,
+    gitForensicsResult,
   };
 };

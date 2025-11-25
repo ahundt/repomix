@@ -280,6 +280,33 @@ export const buildCliConfig = (options: CliOptions): RepomixConfigCli => {
     };
   }
 
+  // Configure git forensics options
+  if (
+    options.gitForensics ||
+    options.gitRange ||
+    options.gitDetailLevel ||
+    options.gitAnalyze ||
+    options.gitNoGraph !== undefined ||
+    options.gitNoTags !== undefined ||
+    options.gitNoPatches !== undefined
+  ) {
+    const gitForensicsConfig = {
+      ...cliConfig.output?.git,
+      ...(options.gitForensics && { includeForensics: true }),
+      ...(options.gitRange && { forensicsRange: options.gitRange }),
+      ...(options.gitDetailLevel && { forensicsDetailLevel: options.gitDetailLevel }),
+      ...(options.gitAnalyze && { forensicsIncludeAnalysis: true }),
+      ...(options.gitNoGraph && { forensicsIncludeGraph: false }),
+      ...(options.gitNoTags && { forensicsIncludeTags: false }),
+      ...(options.gitNoPatches && { forensicsIncludePatches: false }),
+    };
+
+    cliConfig.output = {
+      ...cliConfig.output,
+      git: gitForensicsConfig,
+    };
+  }
+
   if (options.tokenCountTree !== undefined) {
     cliConfig.output = {
       ...cliConfig.output,

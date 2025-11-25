@@ -76,12 +76,101 @@ export const getMarkdownTemplate = () => {
 {{/each}}
 {{/if}}
 
+{{#if gitForensicsEnabled}}
+# Git Forensics
+
+## Analysis Summary
+- **Total Commits**: {{{gitForensicsSummary.totalCommits}}}
+- **Merge Commits**: {{{gitForensicsSummary.mergeCommits}}}
+{{#if gitForensicsSummary.aiGeneratedCommits}}
+- **AI-Generated**: {{{gitForensicsSummary.aiGeneratedCommits}}} ({{gitForensicsAiPercentage}}%)
+- **Potential Regressions**: {{{gitForensicsSummary.potentialRegressions}}}
+{{/if}}
+- **Range**: \`{{{gitForensicsSummary.range}}}\`
+- **Detail Level**: {{{gitForensicsSummary.detailLevel}}}
+
+{{#if gitForensicsGraph}}
+## Commit Graph
+
+### Topology (ASCII)
+\`\`\`
+{{{gitForensicsGraph.graph}}}
+\`\`\`
+
+{{#if gitForensicsGraph.mermaidGraph}}
+### Mermaid Diagram
+\`\`\`mermaid
+{{{gitForensicsGraph.mermaidGraph}}}
+\`\`\`
+{{/if}}
+
+{{#if gitForensicsGraph.tags}}
+### Tags
+{{#each gitForensicsGraph.tags}}
+- **{{{@key}}}**: \`{{{this}}}\`
+{{/each}}
+{{/if}}
+
+{{/if}}
+
+## Commits
+
+{{#each gitForensicsCommits}}
+### Commit {{{this.metadata.abbreviatedHash}}}{{#if this.analysis.isAiGenerated}} 🤖 AI-Generated{{/if}}{{#if this.analysis.isPotentialRegression}} ⚠️ Potential Regression{{/if}}
+
+**Hash**: \`{{{this.metadata.hash}}}\`
+**Author**: {{{this.metadata.author.name}}} <{{{this.metadata.author.email}}}>
+**Date**: {{{this.metadata.author.date}}}
+{{#if this.metadata.parents}}
+**Parents**: {{#each this.metadata.parents}}\`{{{this}}}\` {{/each}}
+{{/if}}
+**Message**: {{{this.metadata.message}}}
+
+{{#if this.metadata.body}}
+**Body**:
+\`\`\`
+{{{this.metadata.body}}}
+\`\`\`
+{{/if}}
+
+{{#if this.analysis}}
+**Analysis**:
+- **AI-Generated**: {{#if this.analysis.isAiGenerated}}Yes (confidence: {{{this.analysis.confidence}}}%){{else}}No{{/if}}
+- **Message Quality**: {{{this.analysis.messageQuality}}}
+- **Potential Regression**: {{#if this.analysis.isPotentialRegression}}Yes{{else}}No{{/if}}
+{{#if this.analysis.indicators}}
+- **AI Indicators**: {{#each this.analysis.indicators}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+{{/if}}
+{{#if this.analysis.regressionIndicators}}
+- **Regression Indicators**: {{#each this.analysis.regressionIndicators}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+{{/if}}
+{{/if}}
+
+{{#if this.patch}}
+**Changes**:
+\`\`\`diff
+{{{this.patch}}}
+\`\`\`
+{{/if}}
+
+---
+
+{{/each}}
+{{/if}}
+
 {{#if instruction}}
 # Instruction
 {{{instruction}}}
 {{/if}}
 `;
 };
+
+Handlebars.registerHelper('gitForensicsAiPercentage', function (this: { gitForensicsSummary: { totalCommits: number; aiGeneratedCommits: number } }) {
+  const total = this.gitForensicsSummary?.totalCommits || 0;
+  const aiCount = this.gitForensicsSummary?.aiGeneratedCommits || 0;
+  if (total === 0) return '0';
+  return Math.round((aiCount / total) * 100).toString();
+});
 
 Handlebars.registerHelper('getFileExtension', (filePath) => {
   const extension = filePath.split('.').pop()?.toLowerCase();

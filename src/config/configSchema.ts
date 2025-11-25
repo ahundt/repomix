@@ -48,6 +48,14 @@ export const repomixConfigBaseSchema = z.object({
           includeDiffs: z.boolean().optional(),
           includeLogs: z.boolean().optional(),
           includeLogsCount: z.number().optional(),
+          // Git Forensics options
+          includeForensics: z.boolean().optional(),
+          forensicsRange: z.string().optional(),
+          forensicsDetailLevel: z.enum(['full', 'stat', 'files', 'metadata']).optional(),
+          forensicsIncludeGraph: z.boolean().optional(),
+          forensicsIncludeAnalysis: z.boolean().optional(),
+          forensicsIncludeTags: z.boolean().optional(),
+          forensicsIncludePatches: z.boolean().optional(),
         })
         .optional(),
     })
@@ -107,6 +115,14 @@ export const repomixConfigDefaultSchema = z.object({
       includeDiffs: z.boolean().default(false),
       includeLogs: z.boolean().default(false),
       includeLogsCount: z.number().int().min(1).default(50),
+      // Git Forensics options with sensible defaults
+      includeForensics: z.boolean().default(false),
+      forensicsRange: z.string().default('HEAD~50..HEAD'),
+      forensicsDetailLevel: z.enum(['full', 'stat', 'files', 'metadata']).default('stat'),
+      forensicsIncludeGraph: z.boolean().default(true),
+      forensicsIncludeAnalysis: z.boolean().default(false),
+      forensicsIncludeTags: z.boolean().default(true),
+      forensicsIncludePatches: z.boolean().default(true),
     }),
   }),
   include: z.array(z.string()).default([]),

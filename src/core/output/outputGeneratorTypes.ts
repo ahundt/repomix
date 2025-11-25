@@ -1,6 +1,7 @@
 import type { RepomixConfigMerged } from '../../config/configSchema.js';
 import type { ProcessedFile } from '../file/fileTypes.js';
 import type { GitDiffResult } from '../git/gitDiffHandle.js';
+import type { GitForensicsResult } from '../git/gitForensicsHandle.js';
 import type { GitLogCommit, GitLogResult } from '../git/gitLogHandle.js';
 
 export interface OutputGeneratorContext {
@@ -11,6 +12,7 @@ export interface OutputGeneratorContext {
   instruction: string;
   gitDiffResult: GitDiffResult | undefined;
   gitLogResult: GitLogResult | undefined;
+  gitForensicsResult: GitForensicsResult | undefined;
 }
 
 export interface RenderContext {
@@ -34,4 +36,8 @@ export interface RenderContext {
   readonly gitLogEnabled: boolean;
   readonly gitLogContent: string | undefined;
   readonly gitLogCommits: GitLogCommit[] | undefined;
+  readonly gitForensicsEnabled: boolean;
+  readonly gitForensicsSummary: GitForensicsResult['summary'] | undefined;
+  readonly gitForensicsGraph: GitForensicsResult['graph'] | undefined;
+  readonly gitForensicsCommits: GitForensicsResult['commits'] | undefined;
 }

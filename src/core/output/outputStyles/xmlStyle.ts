@@ -80,6 +80,95 @@ This section contains the contents of the repository's files.
 </git_logs>
 {{/if}}
 
+{{#if gitForensicsEnabled}}
+<git_forensics>
+<summary>
+<total_commits>{{{gitForensicsSummary.totalCommits}}}</total_commits>
+<merge_commits>{{{gitForensicsSummary.mergeCommits}}}</merge_commits>
+{{#if gitForensicsSummary.aiGeneratedCommits}}
+<ai_generated_commits>{{{gitForensicsSummary.aiGeneratedCommits}}}</ai_generated_commits>
+<potential_regressions>{{{gitForensicsSummary.potentialRegressions}}}</potential_regressions>
+{{/if}}
+<range>{{{gitForensicsSummary.range}}}</range>
+<detail_level>{{{gitForensicsSummary.detailLevel}}}</detail_level>
+</summary>
+
+{{#if gitForensicsGraph}}
+<commit_graph>
+<ascii_graph>
+{{{gitForensicsGraph.graph}}}
+</ascii_graph>
+{{#if gitForensicsGraph.mermaidGraph}}
+<mermaid_graph>
+{{{gitForensicsGraph.mermaidGraph}}}
+</mermaid_graph>
+{{/if}}
+{{#if gitForensicsGraph.tags}}
+<tags>
+{{#each gitForensicsGraph.tags}}
+<tag name="{{{@key}}}">{{{this}}}</tag>
+{{/each}}
+</tags>
+{{/if}}
+</commit_graph>
+{{/if}}
+
+<commits>
+{{#each gitForensicsCommits}}
+<commit hash="{{{this.metadata.hash}}}" abbreviated_hash="{{{this.metadata.abbreviatedHash}}}"{{#if this.analysis.isAiGenerated}} ai_generated="true"{{/if}}{{#if this.analysis.isPotentialRegression}} potential_regression="true"{{/if}}>
+<author>
+<name>{{{this.metadata.author.name}}}</name>
+<email>{{{this.metadata.author.email}}}</email>
+<date>{{{this.metadata.author.date}}}</date>
+</author>
+<committer>
+<name>{{{this.metadata.committer.name}}}</name>
+<email>{{{this.metadata.committer.email}}}</email>
+<date>{{{this.metadata.committer.date}}}</date>
+</committer>
+{{#if this.metadata.parents}}
+<parents>
+{{#each this.metadata.parents}}
+<parent>{{{this}}}</parent>
+{{/each}}
+</parents>
+{{/if}}
+<message>{{{this.metadata.message}}}</message>
+{{#if this.metadata.body}}
+<body>{{{this.metadata.body}}}</body>
+{{/if}}
+{{#if this.analysis}}
+<analysis>
+<ai_generated confidence="{{{this.analysis.confidence}}}">{{{this.analysis.isAiGenerated}}}</ai_generated>
+<message_quality>{{{this.analysis.messageQuality}}}</message_quality>
+<potential_regression>{{{this.analysis.isPotentialRegression}}}</potential_regression>
+{{#if this.analysis.indicators}}
+<ai_indicators>
+{{#each this.analysis.indicators}}
+<indicator>{{{this}}}</indicator>
+{{/each}}
+</ai_indicators>
+{{/if}}
+{{#if this.analysis.regressionIndicators}}
+<regression_indicators>
+{{#each this.analysis.regressionIndicators}}
+<indicator>{{{this}}}</indicator>
+{{/each}}
+</regression_indicators>
+{{/if}}
+</analysis>
+{{/if}}
+{{#if this.patch}}
+<patch>
+{{{this.patch}}}
+</patch>
+{{/if}}
+</commit>
+{{/each}}
+</commits>
+</git_forensics>
+{{/if}}
+
 {{#if instruction}}
 <instruction>
 {{{instruction}}}
