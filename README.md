@@ -286,7 +286,7 @@ repomix --include-logs --include-diffs
 
 The git logs include commit dates, messages, and file paths for each commit, providing valuable context for AI analysis of code evolution and development patterns.
 
-To analyze git commit history with AI-generated commit detection:
+To analyze git commit history:
 
 ```bash
 # Include comprehensive commit history analysis
