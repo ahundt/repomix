@@ -1,11 +1,11 @@
-# Repomix Git Forensics Extension - Design Document
+# Repomix Git History Extension - Design Document
 
 **Status**: ✅ Implementation Complete (All Phases)
 **Last Updated**: 2025-11-24
 
 ## Executive Summary
 
-This document describes the design and implementation of git forensics capabilities for repomix, following **KISS** (Keep It Simple), **DRY** (Don't Repeat Yourself), **OODA** (Observe, Orient, Decide, Act), and **Easy to Use Correctly, Hard to Use Incorrectly** principles.
+This document describes the design and implementation of git history capabilities for repomix, following **KISS** (Keep It Simple), **DRY** (Don't Repeat Yourself), **OODA** (Observe, Orient, Decide, Act), and **Easy to Use Correctly, Hard to Use Incorrectly** principles.
 
 **Goal**: Enable comprehensive git history analysis for AI-powered regression detection, parallel development visualization, and context generation optimized for LLMs like Gemini 3.
 
@@ -21,7 +21,7 @@ This document describes the design and implementation of git forensics capabilit
 - Reuse existing `src/core/git/` infrastructure
 - Extend `execFileAsync` pattern from `gitCommand.ts`
 - Share `CommitMetadata` type across all layers
-- Add forensics sections to existing templates
+- Add history sections to existing templates
 
 ### 3. OODA (Observe, Orient, Decide, Act)
 
@@ -46,14 +46,14 @@ This document describes the design and implementation of git forensics capabilit
 **Oriented** (Strategy):
 - Extend, don't replace existing functionality
 - Keep backward compatibility (existing options unchanged)
-- Opt-in design (forensics disabled by default)
-- Sensible defaults (works with just `--git-forensics`)
+- Opt-in design (history disabled by default)
+- Sensible defaults (works with just `--git-history`)
 
 **Decided** (Architecture):
 ```
 src/core/git/
-├── gitForensics.ts         [NEW] Pure git operations (300 lines)
-├── gitForensicsHandle.ts   [NEW] Orchestrator (200 lines)
+├── gitHistory.ts         [NEW] Pure git operations (300 lines)
+├── gitHistoryHandle.ts   [NEW] Orchestrator (200 lines)
 └── [existing files unchanged]
 ```
 
@@ -65,18 +65,18 @@ src/core/git/
 
 **Easy - Simple Case**:
 ```bash
-repomix --git-forensics  # Works with all defaults
+repomix --git-history  # Works with all defaults
 ```
 
 **Easy - Common Case**:
 ```bash
-repomix --git-forensics --git-range HEAD~20..HEAD
+repomix --git-history --git-range HEAD~20..HEAD
 ```
 
 **Hard to Misuse**:
 ```bash
-repomix --git-forensics --git-range "invalid"     # ❌ Error: Invalid format
-repomix --git-forensics --git-detail-level "foo"  # ❌ Error: Invalid level
+repomix --git-history --git-range "invalid"     # ❌ Error: Invalid format
+repomix --git-history --git-detail-level "foo"  # ❌ Error: Invalid level
 ```
 
 ## Architecture
@@ -85,7 +85,7 @@ repomix --git-forensics --git-detail-level "foo"  # ❌ Error: Invalid level
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ Layer 1: Pure Git Primitives (gitForensics.ts)         │
+│ Layer 1: Pure Git Primitives (gitHistory.ts)         │
 ├─────────────────────────────────────────────────────────┤
 │ - parseCommitRange()    │ Parse HEAD~10..HEAD, tags    │
 │ - getCommitMetadata()   │ Full commit info + parents   │
@@ -96,9 +96,9 @@ repomix --git-forensics --git-detail-level "foo"  # ❌ Error: Invalid level
 └─────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────┐
-│ Layer 2: Orchestrator (gitForensicsHandle.ts)          │
+│ Layer 2: Orchestrator (gitHistoryHandle.ts)          │
 ├─────────────────────────────────────────────────────────┤
-│ - getGitForensics()     │ Coordinates all operations   │
+│ - getGitHistory()     │ Coordinates all operations   │
 │   1. Check if enabled                                   │
 │   2. Validate git repo                                  │
 │   3. Get commit graph                                   │
@@ -110,9 +110,9 @@ repomix --git-forensics --git-detail-level "foo"  # ❌ Error: Invalid level
 ┌─────────────────────────────────────────────────────────┐
 │ Layer 3: Output (Handlebars Templates)                 │
 ├─────────────────────────────────────────────────────────┤
-│ - markdownStyle.ts      │ Forensics section            │
-│ - xmlStyle.ts           │ Forensics section            │
-│ - jsonStyle.ts          │ Forensics section            │
+│ - markdownStyle.ts      │ History section            │
+│ - xmlStyle.ts           │ History section            │
+│ - jsonStyle.ts          │ History section            │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -123,7 +123,7 @@ User CLI Input
     ↓
 Config (Zod validation)
     ↓
-getGitForensics(config)
+getGitHistory(config)
     ↓
 ┌─────────────────────────────┐
 │ For each commit in range:  │
@@ -132,7 +132,7 @@ getGitForensics(config)
 │  3. analyzeCommit()         │
 └─────────────────────────────┘
     ↓
-GitForensicsResult
+GitHistoryResult
     ↓
 Handlebars Template
     ↓
@@ -150,20 +150,20 @@ config.output.git {
   includeDiffs: boolean
   sortByChanges: boolean
 
-  // NEW Forensics
-  includeForensics: boolean           // default: false (opt-in)
-  forensicsRange: string              // default: 'HEAD~50..HEAD'
-  forensicsDetailLevel: enum          // default: 'stat'
-  forensicsIncludeGraph: boolean      // default: true
-  forensicsIncludeAnalysis: boolean   // default: false (expensive)
-  forensicsIncludeTags: boolean       // default: true
-  forensicsIncludePatches: boolean    // default: true
+  // NEW History
+  includeHistory: boolean           // default: false (opt-in)
+  historyRange: string              // default: 'HEAD~50..HEAD'
+  historyDetailLevel: enum          // default: 'stat'
+  historyIncludeGraph: boolean      // default: true
+  historyIncludeAnalysis: boolean   // default: false (expensive)
+  historyIncludeTags: boolean       // default: true
+  historyIncludePatches: boolean    // default: true
 }
 ```
 
 ### CLI Options
 ```bash
---git-forensics              # Enable forensics
+--git-history              # Enable history
 --git-range <range>          # HEAD~10..HEAD, v1.0..v2.0, main..feature
 --git-detail-level <level>   # full | stat | files | metadata
 --git-analyze                # Enable AI detection
@@ -208,9 +208,9 @@ interface CommitAnalysis {
 }
 ```
 
-### GitForensicsResult (Complete Output)
+### GitHistoryResult (Complete Output)
 ```typescript
-interface GitForensicsResult {
+interface GitHistoryResult {
   graph?: CommitGraph;                // Optional graph visualization
   commits: Array<{
     metadata: CommitMetadata;
@@ -293,8 +293,8 @@ if (message.includes('fix') && files.length > 3) {
 
 ## Implementation Status
 
-### ✅ Phase 1: Core Forensics (COMPLETE)
-- [x] `src/core/git/gitForensics.ts` (300 lines)
+### ✅ Phase 1: Core History (COMPLETE)
+- [x] `src/core/git/gitHistory.ts` (300 lines)
 - [x] `parseCommitRange()` with validation
 - [x] `getCommitMetadata()` using `git log --format=fuller --parents`
 - [x] `getCommitGraph()` using `git log --graph --all`
@@ -310,8 +310,8 @@ if (message.includes('fix') && files.length > 3) {
 - [x] Added semantic suggestions for CLI help
 
 ### ✅ Phase 3: Orchestration (COMPLETE)
-- [x] `src/core/git/gitForensicsHandle.ts` (200 lines)
-- [x] `getGitForensics()` with config handling
+- [x] `src/core/git/gitHistoryHandle.ts` (200 lines)
+- [x] `getGitHistory()` with config handling
 - [x] Error handling and graceful degradation
 - [x] Summary statistics calculation
 - [x] Logging and progress indicators
@@ -320,7 +320,7 @@ if (message.includes('fix') && files.length > 3) {
 - [ ] Extend `src/core/output/outputStyles/markdownStyle.ts`
 - [ ] Extend `src/core/output/outputStyles/xmlStyle.ts`
 - [ ] Extend `src/core/output/outputStyles/jsonStyle.ts`
-- [ ] Add forensics to output generation pipeline
+- [ ] Add history to output generation pipeline
 - [ ] Write output tests with snapshots
 
 ### ⏳ Phase 5: Integration & Testing (PENDING)
@@ -330,8 +330,8 @@ if (message.includes('fix') && files.length > 3) {
 - [ ] Performance testing (<30s for 100 commits)
 
 ### ⏳ Phase 6: Documentation (PENDING)
-- [ ] Update `README.md` with forensics examples
-- [ ] Create `docs/git-forensics.md` guide
+- [ ] Update `README.md` with history examples
+- [ ] Create `docs/git-history.md` guide
 - [ ] Add example prompts in `examples/prompts/`
 - [ ] Add example outputs in `examples/outputs/`
 
@@ -339,7 +339,7 @@ if (message.includes('fix') && files.length > 3) {
 
 ### Installation & Setup
 
-No additional setup required! Git forensics is built into repomix. Just ensure you have:
+No additional setup required! Git history is built into repomix. Just ensure you have:
 - Git installed (`git --version`)
 - Repomix installed (`npm install -g repomix` or clone this repository)
 - A git repository to analyze
@@ -351,9 +351,9 @@ No additional setup required! Git forensics is built into repomix. Just ensure y
 cd /path/to/your/repo
 ```
 
-**Step 2**: Run forensics with defaults
+**Step 2**: Run history with defaults
 ```bash
-repomix --git-forensics
+repomix --git-history
 ```
 
 This generates `repomix-output.txt` with:
@@ -374,7 +374,7 @@ cat repomix-output.txt
 Analyze commits with AI detection to identify potential AI-generated code:
 
 ```bash
-repomix --git-forensics --git-analyze
+repomix --git-history --git-analyze
 ```
 
 Output includes:
@@ -396,16 +396,16 @@ Review commits between two versions:
 
 ```bash
 # Last 20 commits
-repomix --git-forensics --git-range HEAD~20..HEAD
+repomix --git-history --git-range HEAD~20..HEAD
 
 # Between tags
-repomix --git-forensics --git-range v1.0.0..v2.0.0
+repomix --git-history --git-range v1.0.0..v2.0.0
 
 # Between branches
-repomix --git-forensics --git-range main..feature-branch
+repomix --git-history --git-range main..feature-branch
 
 # Since a specific date
-repomix --git-forensics --git-range '@{2024-01-01}..HEAD'
+repomix --git-history --git-range '@{2024-01-01}..HEAD'
 ```
 
 #### 🔧 Get Full Patches
@@ -413,7 +413,7 @@ repomix --git-forensics --git-range '@{2024-01-01}..HEAD'
 Include complete diff patches for each commit:
 
 ```bash
-repomix --git-forensics --git-detail-level full
+repomix --git-history --git-detail-level full
 ```
 
 Available detail levels:
@@ -426,13 +426,13 @@ Available detail levels:
 
 ```bash
 # JSON output (for programmatic analysis)
-repomix --git-forensics --style json > forensics.json
+repomix --git-history --style json > history.json
 
 # Markdown output (for documentation)
-repomix --git-forensics --style markdown > CHANGELOG.md
+repomix --git-history --style markdown > CHANGELOG.md
 
 # XML output (for CI/CD integration)
-repomix --git-forensics --style xml > forensics.xml
+repomix --git-history --style xml > history.xml
 ```
 
 #### 🎯 Focused Analysis
@@ -441,14 +441,14 @@ Combine options for specific needs:
 
 ```bash
 # Release notes: commits in release + AI detection + full patches
-repomix --git-forensics \
+repomix --git-history \
   --git-range v1.0.0..v2.0.0 \
   --git-analyze \
   --git-detail-level full \
   --style markdown
 
 # Quick overview: recent commits, no extras
-repomix --git-forensics \
+repomix --git-history \
   --git-range HEAD~10..HEAD \
   --git-no-tags \
   --git-no-patches \
@@ -459,7 +459,7 @@ repomix --git-forensics \
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--git-forensics` | Enable git forensics mode | `false` |
+| `--git-history` | Enable git history mode | `false` |
 | `--git-range <range>` | Commit range (e.g., HEAD~10..HEAD) | `HEAD~50..HEAD` |
 | `--git-detail-level <level>` | Patch detail: full, stat, files, metadata | `stat` |
 | `--git-analyze` | Enable AI detection & regression analysis | `false` |
@@ -475,13 +475,13 @@ Add to `repomix.config.json`:
 {
   "output": {
     "git": {
-      "includeForensics": true,
-      "forensicsRange": "HEAD~100..HEAD",
-      "forensicsDetailLevel": "stat",
-      "forensicsIncludeGraph": true,
-      "forensicsIncludeAnalysis": true,
-      "forensicsIncludeTags": true,
-      "forensicsIncludePatches": true
+      "includeHistory": true,
+      "historyRange": "HEAD~100..HEAD",
+      "historyDetailLevel": "stat",
+      "historyIncludeGraph": true,
+      "historyIncludeAnalysis": true,
+      "historyIncludeTags": true,
+      "historyIncludePatches": true
     }
   }
 }
@@ -501,19 +501,19 @@ cd /path/to/git/repo
 ```bash
 # Solution: Verify range format
 git log --oneline HEAD~10..HEAD  # Test range first
-repomix --git-forensics --git-range HEAD~10..HEAD
+repomix --git-history --git-range HEAD~10..HEAD
 ```
 
 **Problem**: Output too large
 ```bash
 # Solution: Reduce range or disable patches
-repomix --git-forensics --git-range HEAD~20..HEAD --git-no-patches
+repomix --git-history --git-range HEAD~20..HEAD --git-no-patches
 ```
 
 **Problem**: Slow performance
 ```bash
 # Solution: Use metadata-only mode
-repomix --git-forensics --git-detail-level metadata --git-no-graph
+repomix --git-history --git-detail-level metadata --git-no-graph
 ```
 
 ### Next Steps
@@ -527,7 +527,7 @@ repomix --git-forensics --git-detail-level metadata --git-no-graph
 
 ### Example 1: Simple Analysis
 ```bash
-repomix --git-forensics
+repomix --git-history
 ```
 Output:
 - Last 50 commits
@@ -538,7 +538,7 @@ Output:
 
 ### Example 2: Detect AI Regressions
 ```bash
-repomix --git-forensics --git-range HEAD~20..HEAD --git-analyze
+repomix --git-history --git-range HEAD~20..HEAD --git-analyze
 ```
 Output:
 - 20 commits analyzed
@@ -548,7 +548,7 @@ Output:
 
 ### Example 3: Compare Branches
 ```bash
-repomix --git-forensics --git-range main..feature --git-detail-level full
+repomix --git-history --git-range main..feature --git-detail-level full
 ```
 Output:
 - All commits unique to feature branch
@@ -558,7 +558,7 @@ Output:
 
 ### Example 4: Release Analysis
 ```bash
-repomix --git-forensics --git-range v1.0.0..v2.0.0 --git-analyze
+repomix --git-history --git-range v1.0.0..v2.0.0 --git-analyze
 ```
 Output:
 - All commits in release
@@ -570,7 +570,7 @@ Output:
 
 ### Unit Tests (✅ COMPLETE)
 ```typescript
-// tests/core/git/gitForensics.test.ts (500+ lines)
+// tests/core/git/gitHistory.test.ts (500+ lines)
 describe('parseCommitRange')
 describe('getCommitMetadata')
 describe('getTags')
@@ -581,10 +581,10 @@ describe('getCommitGraph')
 
 ### Integration Tests (⏳ PENDING)
 ```typescript
-// tests/core/git/gitForensicsHandle.test.ts
-describe('getGitForensics', () => {
-  it('gets forensics for valid range');
-  it('returns undefined when forensics disabled');
+// tests/core/git/gitHistoryHandle.test.ts
+describe('getGitHistory', () => {
+  it('gets history for valid range');
+  it('returns undefined when history disabled');
   it('returns undefined for non-git repo');
   it('handles merge commits correctly');
   it('detects AI commits in real repo');
@@ -658,13 +658,13 @@ for (const commit of commits) {
 ### Graceful Degradation
 ```typescript
 // Not enabled → return undefined (not an error)
-if (!config.output.git?.includeForensics) {
+if (!config.output.git?.includeHistory) {
   return undefined;
 }
 
 // Not a git repo → return undefined (graceful)
 if (!(await isGitRepository(dir))) {
-  logger.trace('Not a git repo, skipping forensics');
+  logger.trace('Not a git repo, skipping history');
   return undefined;
 }
 ```
@@ -755,7 +755,7 @@ npm run type-check
 ### Test Failures
 ```bash
 # Run specific test file
-npm test tests/core/git/gitForensics.test.ts
+npm test tests/core/git/gitHistory.test.ts
 
 # Run with coverage
 npm run test:coverage
@@ -765,7 +765,7 @@ npm run test:coverage
 ```bash
 # Rebuild and test
 npm run build
-node bin/repomix.cjs --git-forensics --help
+node bin/repomix.cjs --git-history --help
 ```
 
 ## References

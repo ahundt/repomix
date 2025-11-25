@@ -280,9 +280,9 @@ export const buildCliConfig = (options: CliOptions): RepomixConfigCli => {
     };
   }
 
-  // Configure git forensics options
+  // Configure git history analysis options
   if (
-    options.gitForensics ||
+    options.gitHistory ||
     options.gitRange ||
     options.gitDetailLevel ||
     options.gitAnalyze ||
@@ -290,20 +290,20 @@ export const buildCliConfig = (options: CliOptions): RepomixConfigCli => {
     options.gitNoTags !== undefined ||
     options.gitNoPatches !== undefined
   ) {
-    const gitForensicsConfig = {
+    const gitHistoryConfig = {
       ...cliConfig.output?.git,
-      ...(options.gitForensics && { includeForensics: true }),
-      ...(options.gitRange && { forensicsRange: options.gitRange }),
-      ...(options.gitDetailLevel && { forensicsDetailLevel: options.gitDetailLevel }),
-      ...(options.gitAnalyze && { forensicsIncludeAnalysis: true }),
-      ...(options.gitNoGraph && { forensicsIncludeGraph: false }),
-      ...(options.gitNoTags && { forensicsIncludeTags: false }),
-      ...(options.gitNoPatches && { forensicsIncludePatches: false }),
+      ...(options.gitHistory && { includeHistory: true }),
+      ...(options.gitRange && { historyRange: options.gitRange }),
+      ...(options.gitDetailLevel && { patchDetailLevel: options.gitDetailLevel }),
+      ...(options.gitAnalyze && { includeAnalysis: true }),
+      ...(options.gitNoGraph && { includeGraph: false }),
+      ...(options.gitNoTags && { includeTags: false }),
+      ...(options.gitNoPatches && { includePatches: false }),
     };
 
     cliConfig.output = {
       ...cliConfig.output,
-      git: gitForensicsConfig,
+      git: gitHistoryConfig,
     };
   }
 

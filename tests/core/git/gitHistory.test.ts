@@ -7,9 +7,9 @@ import {
   getCommitPatch,
   getTags,
   parseCommitRange,
-} from '../../../src/core/git/gitForensics.js';
+} from '../../../src/core/git/gitHistory.js';
 
-describe('gitForensics', () => {
+describe('gitHistory', () => {
   describe('parseCommitRange', () => {
     it('should parse HEAD~10..HEAD range', () => {
       const result = parseCommitRange('HEAD~10..HEAD');

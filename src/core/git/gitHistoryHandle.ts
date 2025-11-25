@@ -9,13 +9,13 @@ import {
   getCommitGraph,
   getCommitPatch,
   type PatchDetailLevel,
-} from './gitForensics.js';
+} from './gitHistory.js';
 import { isGitRepository } from './gitRepositoryHandle.js';
 
 /**
  * Complete forensics result for a single commit
  */
-export interface ForensicsCommitResult {
+export interface HistoryCommitResult {
   metadata: CommitMetadata;
   patch: string;
   analysis?: CommitAnalysis;
@@ -24,7 +24,7 @@ export interface ForensicsCommitResult {
 /**
  * Summary statistics for forensics analysis
  */
-export interface ForensicsSummary {
+export interface HistorySummary {
   totalCommits: number;
   mergeCommits: number;
   aiGeneratedCommits: number;
@@ -36,16 +36,16 @@ export interface ForensicsSummary {
 /**
  * Complete git forensics result
  */
-export interface GitForensicsResult {
+export interface GitHistoryResult {
   graph?: CommitGraph;
-  commits: ForensicsCommitResult[];
-  summary: ForensicsSummary;
+  commits: HistoryCommitResult[];
+  summary: HistorySummary;
 }
 
 /**
  * Get comprehensive git forensics analysis
  */
-export const getGitForensics = async (
+export const getGitHistory = async (
   rootDirs: string[],
   config: RepomixConfigMerged,
   deps = {
@@ -54,10 +54,10 @@ export const getGitForensics = async (
     getCommitPatch,
     analyzeCommit,
   },
-): Promise<GitForensicsResult | undefined> => {
-  // Only run if forensics is explicitly enabled
-  if (!config.output.git?.includeForensics) {
-    logger.trace('Git forensics not enabled');
+): Promise<GitHistoryResult | undefined> => {
+  // Only run if git history is explicitly enabled
+  if (!config.output.git?.includeHistory) {
+    logger.trace('Git commit history analysis not enabled');
     return undefined;
   }
 
@@ -68,18 +68,18 @@ export const getGitForensics = async (
     // Check if this is a git repository
     const isGitRepo = await deps.isGitRepository(gitRoot);
     if (!isGitRepo) {
-      logger.trace(`Directory ${gitRoot} is not a git repository, skipping forensics`);
+      logger.trace(`Directory ${gitRoot} is not a git repository, skipping history analysis`);
       return undefined;
     }
 
     // Get configuration options with defaults
-    const range = config.output.git.forensicsRange || 'HEAD~50..HEAD';
-    const detailLevel = (config.output.git.forensicsDetailLevel as PatchDetailLevel) || 'stat';
-    const includeGraph = config.output.git.forensicsIncludeGraph !== false;
-    const includeAnalysis = config.output.git.forensicsIncludeAnalysis === true;
-    const includePatches = config.output.git.forensicsIncludePatches !== false;
+    const range = config.output.git.historyRange || 'HEAD~50..HEAD';
+    const detailLevel = (config.output.git.patchDetailLevel as PatchDetailLevel) || 'stat';
+    const includeGraph = config.output.git.includeGraph !== false;
+    const includeAnalysis = config.output.git.includeAnalysis === true;
+    const includePatches = config.output.git.includePatches !== false;
 
-    logger.trace('Git forensics configuration:', {
+    logger.trace('Git history analysis configuration:', {
       range,
       detailLevel,
       includeGraph,
@@ -97,7 +97,7 @@ export const getGitForensics = async (
     }
 
     // Process each commit
-    const commits: ForensicsCommitResult[] = [];
+    const commits: HistoryCommitResult[] = [];
     for (const metadata of graph.commits) {
       // Get patch if requested
       const patch = includePatches ? await deps.getCommitPatch(gitRoot, metadata.hash, detailLevel) : '';
@@ -116,7 +116,7 @@ export const getGitForensics = async (
     const aiGeneratedCount = commits.filter((c) => c.analysis?.isAiGenerated).length;
     const regressionCount = commits.filter((c) => c.analysis?.isPotentialRegression).length;
 
-    const summary: ForensicsSummary = {
+    const summary: HistorySummary = {
       totalCommits: commits.length,
       mergeCommits: graph.mergeCommits.length,
       aiGeneratedCommits: aiGeneratedCount,

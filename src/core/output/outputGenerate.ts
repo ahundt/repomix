@@ -8,7 +8,7 @@ import { type FileSearchResult, listDirectories, listFiles, searchFiles } from '
 import { generateTreeString } from '../file/fileTreeGenerate.js';
 import type { ProcessedFile } from '../file/fileTypes.js';
 import type { GitDiffResult } from '../git/gitDiffHandle.js';
-import type { GitForensicsResult } from '../git/gitForensicsHandle.js';
+import type { GitHistoryResult } from '../git/gitHistoryHandle.js';
 import type { GitLogResult } from '../git/gitLogHandle.js';
 import type { OutputGeneratorContext, RenderContext } from './outputGeneratorTypes.js';
 import { sortOutputFiles } from './outputSort.js';
@@ -56,10 +56,10 @@ const createRenderContext = (outputGeneratorContext: OutputGeneratorContext): Re
     gitLogEnabled: outputGeneratorContext.config.output.git?.includeLogs,
     gitLogContent: outputGeneratorContext.gitLogResult?.logContent,
     gitLogCommits: outputGeneratorContext.gitLogResult?.commits,
-    gitForensicsEnabled: outputGeneratorContext.config.output.git?.includeForensics ?? false,
-    gitForensicsSummary: outputGeneratorContext.gitForensicsResult?.summary,
-    gitForensicsGraph: outputGeneratorContext.gitForensicsResult?.graph,
-    gitForensicsCommits: outputGeneratorContext.gitForensicsResult?.commits,
+    gitHistoryEnabled: outputGeneratorContext.config.output.git?.includeHistory ?? false,
+    gitHistorySummary: outputGeneratorContext.gitHistoryResult?.summary,
+    gitHistoryGraph: outputGeneratorContext.gitHistoryResult?.graph,
+    gitHistoryCommits: outputGeneratorContext.gitHistoryResult?.commits,
   };
 };
 
@@ -157,19 +157,19 @@ const generateParsableJsonOutput = async (renderContext: RenderContext): Promise
         files: commit.files,
       })),
     }),
-    ...(renderContext.gitForensicsEnabled && {
-      gitForensics: {
-        summary: renderContext.gitForensicsSummary,
-        ...(renderContext.gitForensicsGraph && {
+    ...(renderContext.gitHistoryEnabled && {
+      gitHistory: {
+        summary: renderContext.gitHistorySummary,
+        ...(renderContext.gitHistoryGraph && {
           graph: {
-            commits: renderContext.gitForensicsGraph.commits,
-            asciiGraph: renderContext.gitForensicsGraph.graph,
-            mermaidGraph: renderContext.gitForensicsGraph.mermaidGraph,
-            mergeCommits: renderContext.gitForensicsGraph.mergeCommits,
-            tags: renderContext.gitForensicsGraph.tags,
+            commits: renderContext.gitHistoryGraph.commits,
+            asciiGraph: renderContext.gitHistoryGraph.graph,
+            mermaidGraph: renderContext.gitHistoryGraph.mermaidGraph,
+            mergeCommits: renderContext.gitHistoryGraph.mergeCommits,
+            tags: renderContext.gitHistoryGraph.tags,
           },
         }),
-        commits: renderContext.gitForensicsCommits?.map((commit) => ({
+        commits: renderContext.gitHistoryCommits?.map((commit) => ({
           metadata: {
             hash: commit.metadata.hash,
             abbreviatedHash: commit.metadata.abbreviatedHash,
@@ -269,7 +269,7 @@ export const generateOutput = async (
   allFilePaths: string[],
   gitDiffResult: GitDiffResult | undefined = undefined,
   gitLogResult: GitLogResult | undefined = undefined,
-  gitForensicsResult: GitForensicsResult | undefined = undefined,
+  gitHistoryResult: GitHistoryResult | undefined = undefined,
   deps = {
     buildOutputGeneratorContext,
     generateHandlebarOutput,
@@ -288,7 +288,7 @@ export const generateOutput = async (
     sortedProcessedFiles,
     gitDiffResult,
     gitLogResult,
-    gitForensicsResult,
+    gitHistoryResult,
   );
   const renderContext = createRenderContext(outputGeneratorContext);
 
@@ -314,7 +314,7 @@ export const buildOutputGeneratorContext = async (
   processedFiles: ProcessedFile[],
   gitDiffResult: GitDiffResult | undefined = undefined,
   gitLogResult: GitLogResult | undefined = undefined,
-  gitForensicsResult: GitForensicsResult | undefined = undefined,
+  gitHistoryResult: GitHistoryResult | undefined = undefined,
   deps = {
     listDirectories,
     listFiles,
@@ -394,6 +394,6 @@ export const buildOutputGeneratorContext = async (
     instruction: repositoryInstruction,
     gitDiffResult,
     gitLogResult,
-    gitForensicsResult,
+    gitHistoryResult,
   };
 };

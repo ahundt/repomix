@@ -27,8 +27,8 @@ export interface CliOptions extends OptionValues {
   includeDiffs?: boolean;
   includeLogs?: boolean;
   includeLogsCount?: number;
-  // Git Forensics Options
-  gitForensics?: boolean;
+  // Git History Analysis Options
+  gitHistory?: boolean;
   gitRange?: string;
   gitDetailLevel?: 'full' | 'stat' | 'files' | 'metadata';
   gitAnalyze?: boolean;

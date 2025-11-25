@@ -76,37 +76,37 @@ export const getMarkdownTemplate = () => {
 {{/each}}
 {{/if}}
 
-{{#if gitForensicsEnabled}}
-# Git Forensics
+{{#if gitHistoryEnabled}}
+# Git Commit History
 
 ## Analysis Summary
-- **Total Commits**: {{{gitForensicsSummary.totalCommits}}}
-- **Merge Commits**: {{{gitForensicsSummary.mergeCommits}}}
-{{#if gitForensicsSummary.aiGeneratedCommits}}
-- **AI-Generated**: {{{gitForensicsSummary.aiGeneratedCommits}}} ({{gitForensicsAiPercentage}}%)
-- **Potential Regressions**: {{{gitForensicsSummary.potentialRegressions}}}
+- **Total Commits**: {{{gitHistorySummary.totalCommits}}}
+- **Merge Commits**: {{{gitHistorySummary.mergeCommits}}}
+{{#if gitHistorySummary.aiGeneratedCommits}}
+- **AI-Generated**: {{{gitHistorySummary.aiGeneratedCommits}}} ({{gitHistoryAiPercentage}}%)
+- **Potential Regressions**: {{{gitHistorySummary.potentialRegressions}}}
 {{/if}}
-- **Range**: \`{{{gitForensicsSummary.range}}}\`
-- **Detail Level**: {{{gitForensicsSummary.detailLevel}}}
+- **Range**: \`{{{gitHistorySummary.range}}}\`
+- **Detail Level**: {{{gitHistorySummary.detailLevel}}}
 
-{{#if gitForensicsGraph}}
+{{#if gitHistoryGraph}}
 ## Commit Graph
 
 ### Topology (ASCII)
 \`\`\`
-{{{gitForensicsGraph.graph}}}
+{{{gitHistoryGraph.graph}}}
 \`\`\`
 
-{{#if gitForensicsGraph.mermaidGraph}}
+{{#if gitHistoryGraph.mermaidGraph}}
 ### Mermaid Diagram
 \`\`\`mermaid
-{{{gitForensicsGraph.mermaidGraph}}}
+{{{gitHistoryGraph.mermaidGraph}}}
 \`\`\`
 {{/if}}
 
-{{#if gitForensicsGraph.tags}}
+{{#if gitHistoryGraph.tags}}
 ### Tags
-{{#each gitForensicsGraph.tags}}
+{{#each gitHistoryGraph.tags}}
 - **{{{@key}}}**: \`{{{this}}}\`
 {{/each}}
 {{/if}}
@@ -115,7 +115,7 @@ export const getMarkdownTemplate = () => {
 
 ## Commits
 
-{{#each gitForensicsCommits}}
+{{#each gitHistoryCommits}}
 ### Commit {{{this.metadata.abbreviatedHash}}}{{#if this.analysis.isAiGenerated}} 🤖 AI-Generated{{/if}}{{#if this.analysis.isPotentialRegression}} ⚠️ Potential Regression{{/if}}
 
 **Hash**: \`{{{this.metadata.hash}}}\`
@@ -165,9 +165,9 @@ export const getMarkdownTemplate = () => {
 `;
 };
 
-Handlebars.registerHelper('gitForensicsAiPercentage', function (this: { gitForensicsSummary: { totalCommits: number; aiGeneratedCommits: number } }) {
-  const total = this.gitForensicsSummary?.totalCommits || 0;
-  const aiCount = this.gitForensicsSummary?.aiGeneratedCommits || 0;
+Handlebars.registerHelper('gitHistoryAiPercentage', function (this: { gitHistorySummary: { totalCommits: number; aiGeneratedCommits: number } }) {
+  const total = this.gitHistorySummary?.totalCommits || 0;
+  const aiCount = this.gitHistorySummary?.aiGeneratedCommits || 0;
   if (total === 0) return '0';
   return Math.round((aiCount / total) * 100).toString();
 });

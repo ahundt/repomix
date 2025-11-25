@@ -80,32 +80,32 @@ This section contains the contents of the repository's files.
 </git_logs>
 {{/if}}
 
-{{#if gitForensicsEnabled}}
-<git_forensics>
+{{#if gitHistoryEnabled}}
+<git_history>
 <summary>
-<total_commits>{{{gitForensicsSummary.totalCommits}}}</total_commits>
-<merge_commits>{{{gitForensicsSummary.mergeCommits}}}</merge_commits>
-{{#if gitForensicsSummary.aiGeneratedCommits}}
-<ai_generated_commits>{{{gitForensicsSummary.aiGeneratedCommits}}}</ai_generated_commits>
-<potential_regressions>{{{gitForensicsSummary.potentialRegressions}}}</potential_regressions>
+<total_commits>{{{gitHistorySummary.totalCommits}}}</total_commits>
+<merge_commits>{{{gitHistorySummary.mergeCommits}}}</merge_commits>
+{{#if gitHistorySummary.aiGeneratedCommits}}
+<ai_generated_commits>{{{gitHistorySummary.aiGeneratedCommits}}}</ai_generated_commits>
+<potential_regressions>{{{gitHistorySummary.potentialRegressions}}}</potential_regressions>
 {{/if}}
-<range>{{{gitForensicsSummary.range}}}</range>
-<detail_level>{{{gitForensicsSummary.detailLevel}}}</detail_level>
+<range>{{{gitHistorySummary.range}}}</range>
+<detail_level>{{{gitHistorySummary.detailLevel}}}</detail_level>
 </summary>
 
-{{#if gitForensicsGraph}}
+{{#if gitHistoryGraph}}
 <commit_graph>
 <ascii_graph>
-{{{gitForensicsGraph.graph}}}
+{{{gitHistoryGraph.graph}}}
 </ascii_graph>
-{{#if gitForensicsGraph.mermaidGraph}}
+{{#if gitHistoryGraph.mermaidGraph}}
 <mermaid_graph>
-{{{gitForensicsGraph.mermaidGraph}}}
+{{{gitHistoryGraph.mermaidGraph}}}
 </mermaid_graph>
 {{/if}}
-{{#if gitForensicsGraph.tags}}
+{{#if gitHistoryGraph.tags}}
 <tags>
-{{#each gitForensicsGraph.tags}}
+{{#each gitHistoryGraph.tags}}
 <tag name="{{{@key}}}">{{{this}}}</tag>
 {{/each}}
 </tags>
@@ -114,7 +114,7 @@ This section contains the contents of the repository's files.
 {{/if}}
 
 <commits>
-{{#each gitForensicsCommits}}
+{{#each gitHistoryCommits}}
 <commit hash="{{{this.metadata.hash}}}" abbreviated_hash="{{{this.metadata.abbreviatedHash}}}"{{#if this.analysis.isAiGenerated}} ai_generated="true"{{/if}}{{#if this.analysis.isPotentialRegression}} potential_regression="true"{{/if}}>
 <author>
 <name>{{{this.metadata.author.name}}}</name>
@@ -166,7 +166,7 @@ This section contains the contents of the repository's files.
 </commit>
 {{/each}}
 </commits>
-</git_forensics>
+</git_history>
 {{/if}}
 
 {{#if instruction}}
