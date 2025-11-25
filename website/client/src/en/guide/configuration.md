@@ -111,7 +111,6 @@ JavaScript configuration files work the same as TypeScript, supporting `defineCo
 | `output.git.includeCommitHistory` | Whether to include comprehensive commit history analysis with graph, patches, and metadata                                  | `false`                |
 | `output.git.commitRange`         | Git commit range to analyze (e.g., "HEAD~50..HEAD", "v1.0..HEAD", "main..feature-branch")                                   | `"HEAD~50..HEAD"`      |
 | `output.git.commitPatchDetail`   | Patch detail level: `full` (complete diffs), `stat` (statistics), `files` (names only), `metadata` (no patches)            | `"stat"`               |
-| `output.git.analyzeCommits`      | Whether to enable AI detection and regression flagging in commit analysis                                                    | `false`                |
 | `output.git.includeCommitGraph`  | Whether to include ASCII and Mermaid commit graph visualizations                                                             | `true`                 |
 | `output.git.includeGitTags`      | Whether to include git tags in commit history output                                                                         | `true`                 |
 | `include`                        | Patterns of files to include using [glob patterns](https://github.com/mrmlnc/fast-glob?tab=readme-ov-file#pattern-syntax)    | `[]`                   |

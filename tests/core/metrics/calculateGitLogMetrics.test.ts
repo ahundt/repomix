@@ -53,7 +53,6 @@ describe('calculateGitLogMetrics', () => {
         commitRange: 'HEAD~50..HEAD',
         commitPatchDetail: 'stat' as const,
         includeCommitGraph: true,
-        includeCommitAnalysis: false,
         includeGitTags: true,
         includeCommitPatches: true,
       },

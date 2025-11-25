@@ -53,7 +53,6 @@ export const repomixConfigBaseSchema = z.object({
           commitRange: z.string().optional(),
           commitPatchDetail: z.enum(['full', 'stat', 'files', 'metadata']).optional(),
           includeCommitGraph: z.boolean().optional(),
-          includeCommitAnalysis: z.boolean().optional(),
           includeGitTags: z.boolean().optional(),
           includeCommitPatches: z.boolean().optional(),
         })
@@ -120,7 +119,6 @@ export const repomixConfigDefaultSchema = z.object({
       commitRange: z.string().default('HEAD~50..HEAD'),
       commitPatchDetail: z.enum(['full', 'stat', 'files', 'metadata']).default('stat'),
       includeCommitGraph: z.boolean().default(true),
-      includeCommitAnalysis: z.boolean().default(false),
       includeGitTags: z.boolean().default(true),
       includeCommitPatches: z.boolean().default(true),
     }),

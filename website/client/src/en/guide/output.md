@@ -243,15 +243,15 @@ src/core/output/outputGenerate.ts
 ```
 ## Commit History Output
 
-When using `--include-commit-history`, the output includes detailed commit analysis:
+When using `--include-commit-history`, the output includes detailed commit metadata and history:
 
 ```xml
 <git_history>
   <summary>
     <total_commits>95</total_commits>
-    <ai_generated_commits>91</ai_generated_commits>
-    <potential_regressions>34</potential_regressions>
+    <merge_commits>12</merge_commits>
     <range>v1.0..HEAD</range>
+    <detail_level>stat</detail_level>
   </summary>
 
   <commit_graph>
@@ -259,17 +259,18 @@ When using `--include-commit-history`, the output includes detailed commit analy
   </commit_graph>
 
   <commits>
-    <commit hash="abc123" ai_generated="true" potential_regression="false">
-      <author>Claude</author>
-      <date>2025-11-20T12:00:00Z</date>
+    <commit hash="abc123" abbreviated_hash="abc123">
+      <author>
+        <name>John Doe</name>
+        <email>john@example.com</email>
+        <date>2025-11-20T12:00:00Z</date>
+      </author>
+      <committer>
+        <name>John Doe</name>
+        <email>john@example.com</email>
+        <date>2025-11-20T12:00:00Z</date>
+      </committer>
       <message>feat: Add new feature</message>
-      <analysis>
-        <ai_generated confidence="80">true</ai_generated>
-        <message_quality>good</message_quality>
-        <ai_indicators>
-          <indicator>AI email pattern: noreply@anthropic.com</indicator>
-        </ai_indicators>
-      </analysis>
       <patch>
         <!-- Diff content when using --commit-patch-detail full -->
       </patch>

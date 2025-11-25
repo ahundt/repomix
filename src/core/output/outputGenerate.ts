@@ -180,16 +180,6 @@ const generateParsableJsonOutput = async (renderContext: RenderContext): Promise
             body: commit.metadata.body,
             files: commit.metadata.files,
           },
-          ...(commit.analysis && {
-            analysis: {
-              isAiGenerated: commit.analysis.isAiGenerated,
-              confidence: commit.analysis.confidence,
-              indicators: commit.analysis.indicators,
-              messageQuality: commit.analysis.messageQuality,
-              isPotentialRegression: commit.analysis.isPotentialRegression,
-              regressionIndicators: commit.analysis.regressionIndicators,
-            },
-          }),
           ...(commit.patch && {
             patch: commit.patch,
           }),

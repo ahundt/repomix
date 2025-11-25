@@ -85,10 +85,6 @@ This section contains the contents of the repository's files.
 <summary>
 <total_commits>{{{gitCommitHistorySummary.totalCommits}}}</total_commits>
 <merge_commits>{{{gitCommitHistorySummary.mergeCommits}}}</merge_commits>
-{{#if gitCommitHistorySummary.aiGeneratedCommits}}
-<ai_generated_commits>{{{gitCommitHistorySummary.aiGeneratedCommits}}}</ai_generated_commits>
-<potential_regressions>{{{gitCommitHistorySummary.potentialRegressions}}}</potential_regressions>
-{{/if}}
 <range>{{{gitCommitHistorySummary.range}}}</range>
 <detail_level>{{{gitCommitHistorySummary.detailLevel}}}</detail_level>
 </summary>
@@ -115,7 +111,7 @@ This section contains the contents of the repository's files.
 
 <commits>
 {{#each gitCommitHistoryItems}}
-<commit hash="{{{this.metadata.hash}}}" abbreviated_hash="{{{this.metadata.abbreviatedHash}}}"{{#if this.analysis.isAiGenerated}} ai_generated="true"{{/if}}{{#if this.analysis.isPotentialRegression}} potential_regression="true"{{/if}}>
+<commit hash="{{{this.metadata.hash}}}" abbreviated_hash="{{{this.metadata.abbreviatedHash}}}">
 <author>
 <name>{{{this.metadata.author.name}}}</name>
 <email>{{{this.metadata.author.email}}}</email>
@@ -136,27 +132,6 @@ This section contains the contents of the repository's files.
 <message>{{{this.metadata.message}}}</message>
 {{#if this.metadata.body}}
 <body>{{{this.metadata.body}}}</body>
-{{/if}}
-{{#if this.analysis}}
-<analysis>
-<ai_generated confidence="{{{this.analysis.confidence}}}">{{{this.analysis.isAiGenerated}}}</ai_generated>
-<message_quality>{{{this.analysis.messageQuality}}}</message_quality>
-<potential_regression>{{{this.analysis.isPotentialRegression}}}</potential_regression>
-{{#if this.analysis.indicators}}
-<ai_indicators>
-{{#each this.analysis.indicators}}
-<indicator>{{{this}}}</indicator>
-{{/each}}
-</ai_indicators>
-{{/if}}
-{{#if this.analysis.regressionIndicators}}
-<regression_indicators>
-{{#each this.analysis.regressionIndicators}}
-<indicator>{{{this}}}</indicator>
-{{/each}}
-</regression_indicators>
-{{/if}}
-</analysis>
 {{/if}}
 {{#if this.patch}}
 <patch>

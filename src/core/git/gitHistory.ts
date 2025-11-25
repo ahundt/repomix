@@ -39,18 +39,6 @@ export interface CommitGraph {
 }
 
 /**
- * Commit quality analysis
- */
-export interface CommitAnalysis {
-  isAiGenerated: boolean;
-  confidence: number; // 0-100
-  indicators: string[];
-  messageQuality: 'excellent' | 'good' | 'fair' | 'poor';
-  isPotentialRegression: boolean;
-  regressionIndicators: string[];
-}
-
-/**
  * Parsed commit range
  */
 export interface ParsedCommitRange {
@@ -336,116 +324,6 @@ export const getCommitPatch = async (
     logger.trace('Failed to get commit patch:', (error as Error).message);
     throw new RepomixError(`Failed to get patch for commit ${hash}: ${(error as Error).message}`);
   }
-};
-
-/**
- * Analyze commit quality and detect AI generation
- */
-export const analyzeCommit = (metadata: CommitMetadata): CommitAnalysis => {
-  const indicators: string[] = [];
-  const regressionIndicators: string[] = [];
-  let aiConfidence = 0;
-
-  // AI Detection Heuristics
-  const authorEmail = metadata.author.email.toLowerCase();
-  const committerEmail = metadata.committer.email.toLowerCase();
-  const message = metadata.message.toLowerCase();
-  const body = metadata.body.toLowerCase();
-
-  // Email patterns indicating AI
-  const aiEmailPatterns = ['claude@', 'noreply@anthropic.com', 'assistant@', 'ai@', 'bot@', 'copilot@'];
-
-  for (const pattern of aiEmailPatterns) {
-    if (authorEmail.includes(pattern) || committerEmail.includes(pattern)) {
-      indicators.push(`AI email pattern: ${pattern}`);
-      aiConfidence += 40;
-    }
-  }
-
-  // Author name patterns
-  if (
-    metadata.author.name.toLowerCase().includes('claude') ||
-    metadata.author.name.toLowerCase().includes('assistant') ||
-    metadata.author.name.toLowerCase().includes('copilot')
-  ) {
-    indicators.push(`AI name pattern: ${metadata.author.name}`);
-    aiConfidence += 30;
-  }
-
-  // Message patterns suggesting AI
-  const aiMessagePatterns = [
-    'update test',
-    'fix test',
-    'refactor:',
-    'feat:',
-    'fix:',
-    'chore:',
-    'test:',
-    'docs:',
-    'style:',
-    'perf:',
-    'ci:',
-    'build:',
-  ];
-
-  const conventionalCommit = aiMessagePatterns.some((pattern) => message.startsWith(pattern));
-  if (conventionalCommit) {
-    indicators.push('Conventional commit format');
-    aiConfidence += 10;
-  }
-
-  // Very structured body text
-  if (body.includes('- ') && body.split('- ').length > 3) {
-    indicators.push('Structured bullet points in body');
-    aiConfidence += 10;
-  }
-
-  // Regression Detection Heuristics
-  const regressionKeywords = ['fix', 'bug', 'revert', 'regression', 'broken', 'issue', 'problem', 'error'];
-
-  for (const keyword of regressionKeywords) {
-    if (message.includes(keyword) || body.includes(keyword)) {
-      regressionIndicators.push(`Keyword: ${keyword}`);
-    }
-  }
-
-  // Test file changes often indicate fixes
-  const testFilePatterns = ['.test.', '.spec.', 'test/', '__tests__/', 'tests/'];
-  const hasTestChanges = metadata.files.some((file) => testFilePatterns.some((pattern) => file.includes(pattern)));
-
-  if (hasTestChanges && regressionIndicators.length > 0) {
-    regressionIndicators.push('Test file changes with fix keywords');
-  }
-
-  // Multiple files changed with "fix" often indicates regression fix
-  if (message.includes('fix') && metadata.files.length > 3) {
-    regressionIndicators.push('Multiple files changed in fix commit');
-  }
-
-  // Message Quality Assessment
-  const messageLength = metadata.message.length;
-  const hasBody = metadata.body.length > 0;
-  const hasConventionalFormat = conventionalCommit;
-
-  let messageQuality: CommitAnalysis['messageQuality'];
-  if (messageLength > 20 && hasBody && hasConventionalFormat) {
-    messageQuality = 'excellent';
-  } else if (messageLength > 10 && (hasBody || hasConventionalFormat)) {
-    messageQuality = 'good';
-  } else if (messageLength > 5) {
-    messageQuality = 'fair';
-  } else {
-    messageQuality = 'poor';
-  }
-
-  return {
-    isAiGenerated: aiConfidence > 50,
-    confidence: Math.min(100, aiConfidence),
-    indicators,
-    messageQuality,
-    isPotentialRegression: regressionIndicators.length > 0,
-    regressionIndicators,
-  };
 };
 
 /**

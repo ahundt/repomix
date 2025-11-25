@@ -2,8 +2,6 @@ import type { RepomixConfigMerged } from '../../config/configSchema.js';
 import { RepomixError } from '../../shared/errorHandle.js';
 import { logger } from '../../shared/logger.js';
 import {
-  analyzeCommit,
-  type CommitAnalysis,
   type CommitGraph,
   type CommitMetadata,
   getCommitGraph,
@@ -18,7 +16,6 @@ import { isGitRepository } from './gitRepositoryHandle.js';
 export interface HistoryCommitResult {
   metadata: CommitMetadata;
   patch: string;
-  analysis?: CommitAnalysis;
 }
 
 /**
@@ -27,8 +24,6 @@ export interface HistoryCommitResult {
 export interface HistorySummary {
   totalCommits: number;
   mergeCommits: number;
-  aiGeneratedCommits: number;
-  potentialRegressions: number;
   range: string;
   detailLevel: PatchDetailLevel;
 }
@@ -52,7 +47,6 @@ export const getGitHistory = async (
     isGitRepository,
     getCommitGraph,
     getCommitPatch,
-    analyzeCommit,
   },
 ): Promise<GitHistoryResult | undefined> => {
   // Only run if git commit history is explicitly enabled
@@ -77,7 +71,6 @@ export const getGitHistory = async (
     const detailLevel = (config.output.git.commitPatchDetail as PatchDetailLevel) || 'stat';
     const includeGraph = config.output.git.includeCommitGraph !== false;
     const includeTags = config.output.git.includeGitTags !== false;
-    const includeAnalysis = config.output.git.includeCommitAnalysis === true;
     const includePatches = config.output.git.includeCommitPatches !== false;
 
     logger.trace('Git history analysis configuration:', {
@@ -85,7 +78,6 @@ export const getGitHistory = async (
       detailLevel,
       includeGraph,
       includeTags,
-      includeAnalysis,
       includePatches,
     });
 
@@ -99,35 +91,21 @@ export const getGitHistory = async (
       // Get patch if requested
       const patch = includePatches ? await deps.getCommitPatch(gitRoot, metadata.hash, detailLevel) : '';
 
-      // Analyze commit if requested
-      const analysis = includeAnalysis ? deps.analyzeCommit(metadata) : undefined;
-
       commits.push({
         metadata,
         patch,
-        analysis,
       });
     }
 
     // Calculate summary statistics
-    const aiGeneratedCount = commits.filter((c) => c.analysis?.isAiGenerated).length;
-    const regressionCount = commits.filter((c) => c.analysis?.isPotentialRegression).length;
-
     const summary: HistorySummary = {
       totalCommits: commits.length,
       mergeCommits: graph.mergeCommits.length,
-      aiGeneratedCommits: aiGeneratedCount,
-      potentialRegressions: regressionCount,
       range,
       detailLevel,
     };
 
-    logger.info(`✅ Git forensics analyzed ${commits.length} commits in range ${range}`);
-    if (includeAnalysis) {
-      logger.info(
-        `   AI-generated: ${aiGeneratedCount}, Potential regressions: ${regressionCount}, Merges: ${graph.mergeCommits.length}`,
-      );
-    }
+    logger.info(`✅ Git history analyzed ${commits.length} commits in range ${range}`);
 
     // Conditionally include graph visualization and tags based on config
     let outputGraph: CommitGraph | undefined = graph;
