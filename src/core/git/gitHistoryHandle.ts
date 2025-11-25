@@ -55,8 +55,8 @@ export const getGitHistory = async (
     analyzeCommit,
   },
 ): Promise<GitHistoryResult | undefined> => {
-  // Only run if git history is explicitly enabled
-  if (!config.output.git?.includeHistory) {
+  // Only run if git commit history is explicitly enabled
+  if (!config.output.git?.includeCommitHistory) {
     logger.trace('Git commit history analysis not enabled');
     return undefined;
   }
@@ -68,16 +68,16 @@ export const getGitHistory = async (
     // Check if this is a git repository
     const isGitRepo = await deps.isGitRepository(gitRoot);
     if (!isGitRepo) {
-      logger.trace(`Directory ${gitRoot} is not a git repository, skipping history analysis`);
+      logger.trace(`Directory ${gitRoot} is not a git repository, skipping commit history analysis`);
       return undefined;
     }
 
     // Get configuration options with defaults
-    const range = config.output.git.historyRange || 'HEAD~50..HEAD';
-    const detailLevel = (config.output.git.patchDetailLevel as PatchDetailLevel) || 'stat';
-    const includeGraph = config.output.git.includeGraph !== false;
-    const includeAnalysis = config.output.git.includeAnalysis === true;
-    const includePatches = config.output.git.includePatches !== false;
+    const range = config.output.git.commitRange || 'HEAD~50..HEAD';
+    const detailLevel = (config.output.git.commitPatchDetail as PatchDetailLevel) || 'stat';
+    const includeGraph = config.output.git.includeCommitGraph !== false;
+    const includeAnalysis = config.output.git.includeCommitAnalysis === true;
+    const includePatches = config.output.git.includeCommitPatches !== false;
 
     logger.trace('Git history analysis configuration:', {
       range,

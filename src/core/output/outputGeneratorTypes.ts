@@ -36,8 +36,8 @@ export interface RenderContext {
   readonly gitLogEnabled: boolean;
   readonly gitLogContent: string | undefined;
   readonly gitLogCommits: GitLogCommit[] | undefined;
-  readonly gitHistoryEnabled: boolean;
-  readonly gitHistorySummary: GitHistoryResult['summary'] | undefined;
-  readonly gitHistoryGraph: GitHistoryResult['graph'] | undefined;
-  readonly gitHistoryCommits: GitHistoryResult['commits'] | undefined;
+  readonly gitCommitHistoryEnabled: boolean;
+  readonly gitCommitHistorySummary: GitHistoryResult['summary'] | undefined;
+  readonly gitCommitGraph: GitHistoryResult['graph'] | undefined;
+  readonly gitCommitHistoryItems: GitHistoryResult['commits'] | undefined;
 }

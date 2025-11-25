@@ -80,32 +80,32 @@ This section contains the contents of the repository's files.
 </git_logs>
 {{/if}}
 
-{{#if gitHistoryEnabled}}
+{{#if gitCommitHistoryEnabled}}
 <git_history>
 <summary>
-<total_commits>{{{gitHistorySummary.totalCommits}}}</total_commits>
-<merge_commits>{{{gitHistorySummary.mergeCommits}}}</merge_commits>
-{{#if gitHistorySummary.aiGeneratedCommits}}
-<ai_generated_commits>{{{gitHistorySummary.aiGeneratedCommits}}}</ai_generated_commits>
-<potential_regressions>{{{gitHistorySummary.potentialRegressions}}}</potential_regressions>
+<total_commits>{{{gitCommitHistorySummary.totalCommits}}}</total_commits>
+<merge_commits>{{{gitCommitHistorySummary.mergeCommits}}}</merge_commits>
+{{#if gitCommitHistorySummary.aiGeneratedCommits}}
+<ai_generated_commits>{{{gitCommitHistorySummary.aiGeneratedCommits}}}</ai_generated_commits>
+<potential_regressions>{{{gitCommitHistorySummary.potentialRegressions}}}</potential_regressions>
 {{/if}}
-<range>{{{gitHistorySummary.range}}}</range>
-<detail_level>{{{gitHistorySummary.detailLevel}}}</detail_level>
+<range>{{{gitCommitHistorySummary.range}}}</range>
+<detail_level>{{{gitCommitHistorySummary.detailLevel}}}</detail_level>
 </summary>
 
-{{#if gitHistoryGraph}}
+{{#if gitCommitGraph}}
 <commit_graph>
 <ascii_graph>
-{{{gitHistoryGraph.graph}}}
+{{{gitCommitGraph.graph}}}
 </ascii_graph>
-{{#if gitHistoryGraph.mermaidGraph}}
+{{#if gitCommitGraph.mermaidGraph}}
 <mermaid_graph>
-{{{gitHistoryGraph.mermaidGraph}}}
+{{{gitCommitGraph.mermaidGraph}}}
 </mermaid_graph>
 {{/if}}
-{{#if gitHistoryGraph.tags}}
+{{#if gitCommitGraph.tags}}
 <tags>
-{{#each gitHistoryGraph.tags}}
+{{#each gitCommitGraph.tags}}
 <tag name="{{{@key}}}">{{{this}}}</tag>
 {{/each}}
 </tags>
@@ -114,7 +114,7 @@ This section contains the contents of the repository's files.
 {{/if}}
 
 <commits>
-{{#each gitHistoryCommits}}
+{{#each gitCommitHistoryItems}}
 <commit hash="{{{this.metadata.hash}}}" abbreviated_hash="{{{this.metadata.abbreviatedHash}}}"{{#if this.analysis.isAiGenerated}} ai_generated="true"{{/if}}{{#if this.analysis.isPotentialRegression}} potential_regression="true"{{/if}}>
 <author>
 <name>{{{this.metadata.author.name}}}</name>

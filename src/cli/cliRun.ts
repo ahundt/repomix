@@ -43,10 +43,10 @@ const semanticSuggestionMap: Record<string, string[]> = {
   console: ['--stdout'],
   terminal: ['--stdout'],
   pipe: ['--stdin'],
-  'git-commits': ['--git-history'],
-  'commit-analysis': ['--git-history', '--git-analyze'],
-  'commit-range': ['--git-range'],
-  history: ['--include-logs', '--git-history'],
+  'git-commits': ['--include-commit-history'],
+  'commit-analysis': ['--include-commit-history', '--analyze-commits'],
+  'commit-range': ['--commit-range'],
+  history: ['--include-logs', '--include-commit-history'],
 };
 
 export const run = async () => {
@@ -141,23 +141,23 @@ export const run = async () => {
           return Number(v);
         },
       )
-      // Git History Analysis Options
+      // Git Commit History Analysis Options
       .option(
-        '--git-history',
+        '--include-commit-history',
         'Include detailed git commit history analysis (includes graph, metadata, patches)',
       )
       .option(
-        '--git-range <range>',
+        '--commit-range <range>',
         'Commit range to analyze (e.g., HEAD~20..HEAD, v1.0..v2.0, main..feature)',
       )
       .option(
-        '--git-detail-level <level>',
+        '--commit-patch-detail <level>',
         'Patch detail level: full (complete diffs), stat (file stats), files (names only), metadata (no diffs)',
       )
-      .option('--git-analyze', 'Enable AI-generated commit detection and regression analysis')
-      .option('--git-no-graph', 'Disable commit graph visualization')
-      .option('--git-no-tags', 'Exclude git tags from output')
-      .option('--git-no-patches', 'Exclude per-commit patches from output')
+      .option('--analyze-commits', 'Enable AI-generated commit detection and regression analysis')
+      .option('--no-commit-graph', 'Disable commit graph visualization')
+      .option('--no-git-tags', 'Exclude git tags from output')
+      .option('--no-commit-patches', 'Exclude per-commit patches from output')
       // File Selection Options
       .optionsGroup('File Selection Options')
       .option(

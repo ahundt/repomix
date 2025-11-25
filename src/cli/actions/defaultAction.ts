@@ -280,30 +280,30 @@ export const buildCliConfig = (options: CliOptions): RepomixConfigCli => {
     };
   }
 
-  // Configure git history analysis options
+  // Configure git commit history analysis options
   if (
-    options.gitHistory ||
-    options.gitRange ||
-    options.gitDetailLevel ||
-    options.gitAnalyze ||
-    options.gitNoGraph !== undefined ||
-    options.gitNoTags !== undefined ||
-    options.gitNoPatches !== undefined
+    options.includeCommitHistory ||
+    options.commitRange ||
+    options.commitPatchDetail ||
+    options.analyzeCommits ||
+    options.noCommitGraph !== undefined ||
+    options.noGitTags !== undefined ||
+    options.noCommitPatches !== undefined
   ) {
-    const gitHistoryConfig = {
+    const gitCommitHistoryConfig = {
       ...cliConfig.output?.git,
-      ...(options.gitHistory && { includeHistory: true }),
-      ...(options.gitRange && { historyRange: options.gitRange }),
-      ...(options.gitDetailLevel && { patchDetailLevel: options.gitDetailLevel }),
-      ...(options.gitAnalyze && { includeAnalysis: true }),
-      ...(options.gitNoGraph && { includeGraph: false }),
-      ...(options.gitNoTags && { includeTags: false }),
-      ...(options.gitNoPatches && { includePatches: false }),
+      ...(options.includeCommitHistory && { includeCommitHistory: true }),
+      ...(options.commitRange && { commitRange: options.commitRange }),
+      ...(options.commitPatchDetail && { commitPatchDetail: options.commitPatchDetail }),
+      ...(options.analyzeCommits && { includeCommitAnalysis: true }),
+      ...(options.noCommitGraph && { includeCommitGraph: false }),
+      ...(options.noGitTags && { includeGitTags: false }),
+      ...(options.noCommitPatches && { includeCommitPatches: false }),
     };
 
     cliConfig.output = {
       ...cliConfig.output,
-      git: gitHistoryConfig,
+      git: gitCommitHistoryConfig,
     };
   }
 

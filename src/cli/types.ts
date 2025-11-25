@@ -27,14 +27,14 @@ export interface CliOptions extends OptionValues {
   includeDiffs?: boolean;
   includeLogs?: boolean;
   includeLogsCount?: number;
-  // Git History Analysis Options
-  gitHistory?: boolean;
-  gitRange?: string;
-  gitDetailLevel?: 'full' | 'stat' | 'files' | 'metadata';
-  gitAnalyze?: boolean;
-  gitNoGraph?: boolean;
-  gitNoTags?: boolean;
-  gitNoPatches?: boolean;
+  // Git Commit History Analysis Options
+  includeCommitHistory?: boolean;
+  commitRange?: string;
+  commitPatchDetail?: 'full' | 'stat' | 'files' | 'metadata';
+  analyzeCommits?: boolean;
+  noCommitGraph?: boolean;
+  noGitTags?: boolean;
+  noCommitPatches?: boolean;
 
   // Filter Options
   include?: string;

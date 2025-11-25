@@ -56,10 +56,10 @@ const createRenderContext = (outputGeneratorContext: OutputGeneratorContext): Re
     gitLogEnabled: outputGeneratorContext.config.output.git?.includeLogs,
     gitLogContent: outputGeneratorContext.gitLogResult?.logContent,
     gitLogCommits: outputGeneratorContext.gitLogResult?.commits,
-    gitHistoryEnabled: outputGeneratorContext.config.output.git?.includeHistory ?? false,
-    gitHistorySummary: outputGeneratorContext.gitHistoryResult?.summary,
-    gitHistoryGraph: outputGeneratorContext.gitHistoryResult?.graph,
-    gitHistoryCommits: outputGeneratorContext.gitHistoryResult?.commits,
+    gitCommitHistoryEnabled: outputGeneratorContext.config.output.git?.includeCommitHistory ?? false,
+    gitCommitHistorySummary: outputGeneratorContext.gitHistoryResult?.summary,
+    gitCommitGraph: outputGeneratorContext.gitHistoryResult?.graph,
+    gitCommitHistoryItems: outputGeneratorContext.gitHistoryResult?.commits,
   };
 };
 
@@ -157,19 +157,19 @@ const generateParsableJsonOutput = async (renderContext: RenderContext): Promise
         files: commit.files,
       })),
     }),
-    ...(renderContext.gitHistoryEnabled && {
-      gitHistory: {
-        summary: renderContext.gitHistorySummary,
-        ...(renderContext.gitHistoryGraph && {
+    ...(renderContext.gitCommitHistoryEnabled && {
+      gitCommitHistory: {
+        summary: renderContext.gitCommitHistorySummary,
+        ...(renderContext.gitCommitGraph && {
           graph: {
-            commits: renderContext.gitHistoryGraph.commits,
-            asciiGraph: renderContext.gitHistoryGraph.graph,
-            mermaidGraph: renderContext.gitHistoryGraph.mermaidGraph,
-            mergeCommits: renderContext.gitHistoryGraph.mergeCommits,
-            tags: renderContext.gitHistoryGraph.tags,
+            commits: renderContext.gitCommitGraph.commits,
+            asciiGraph: renderContext.gitCommitGraph.graph,
+            mermaidGraph: renderContext.gitCommitGraph.mermaidGraph,
+            mergeCommits: renderContext.gitCommitGraph.mergeCommits,
+            tags: renderContext.gitCommitGraph.tags,
           },
         }),
-        commits: renderContext.gitHistoryCommits?.map((commit) => ({
+        commits: renderContext.gitCommitHistoryItems?.map((commit) => ({
           metadata: {
             hash: commit.metadata.hash,
             abbreviatedHash: commit.metadata.abbreviatedHash,
