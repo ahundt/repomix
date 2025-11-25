@@ -286,9 +286,9 @@ export const buildCliConfig = (options: CliOptions): RepomixConfigCli => {
     options.commitRange ||
     options.commitPatchDetail ||
     options.analyzeCommits ||
-    options.noCommitGraph !== undefined ||
-    options.noGitTags !== undefined ||
-    options.noCommitPatches !== undefined
+    options.commitGraph === false ||
+    options.gitTags === false ||
+    options.commitPatches === false
   ) {
     const gitCommitHistoryConfig = {
       ...cliConfig.output?.git,
@@ -296,9 +296,10 @@ export const buildCliConfig = (options: CliOptions): RepomixConfigCli => {
       ...(options.commitRange && { commitRange: options.commitRange }),
       ...(options.commitPatchDetail && { commitPatchDetail: options.commitPatchDetail }),
       ...(options.analyzeCommits && { includeCommitAnalysis: true }),
-      ...(options.noCommitGraph && { includeCommitGraph: false }),
-      ...(options.noGitTags && { includeGitTags: false }),
-      ...(options.noCommitPatches && { includeCommitPatches: false }),
+      // Only apply these settings when explicitly set to false (to respect config file values)
+      ...(options.commitGraph === false && { includeCommitGraph: false }),
+      ...(options.gitTags === false && { includeGitTags: false }),
+      ...(options.commitPatches === false && { includeCommitPatches: false }),
     };
 
     cliConfig.output = {

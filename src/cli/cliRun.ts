@@ -154,7 +154,7 @@ export const run = async () => {
         '--commit-patch-detail <level>',
         'Patch detail level: full (complete diffs), stat (file stats), files (names only), metadata (no diffs)',
       )
-      .option('--analyze-commits', 'Enable AI-generated commit detection and regression analysis')
+      .option('--analyze-commits', 'Enable commit message format assessment and regression detection')
       .option('--no-commit-graph', 'Disable commit graph visualization')
       .option('--no-git-tags', 'Exclude git tags from output')
       .option('--no-commit-patches', 'Exclude per-commit patches from output')

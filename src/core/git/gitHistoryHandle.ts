@@ -76,6 +76,7 @@ export const getGitHistory = async (
     const range = config.output.git.commitRange || 'HEAD~50..HEAD';
     const detailLevel = (config.output.git.commitPatchDetail as PatchDetailLevel) || 'stat';
     const includeGraph = config.output.git.includeCommitGraph !== false;
+    const includeTags = config.output.git.includeGitTags !== false;
     const includeAnalysis = config.output.git.includeCommitAnalysis === true;
     const includePatches = config.output.git.includeCommitPatches !== false;
 
@@ -83,18 +84,14 @@ export const getGitHistory = async (
       range,
       detailLevel,
       includeGraph,
+      includeTags,
       includeAnalysis,
       includePatches,
     });
 
-    // Get commit graph (includes metadata for all commits)
-    const graph = includeGraph ? await deps.getCommitGraph(gitRoot, range) : undefined;
-
-    // If graph wasn't fetched, we need to get commits another way
-    // For now, we'll require the graph for simplicity
-    if (!graph) {
-      throw new RepomixError('Git forensics requires commit graph to be enabled');
-    }
+    // Get commit graph (always fetch to get commit metadata and graph structure)
+    // The includeGraph/includeGitTags flags control what appears in the output
+    const graph = await deps.getCommitGraph(gitRoot, range);
 
     // Process each commit
     const commits: HistoryCommitResult[] = [];
@@ -132,8 +129,21 @@ export const getGitHistory = async (
       );
     }
 
+    // Conditionally include graph visualization and tags based on config
+    let outputGraph: CommitGraph | undefined = graph;
+    if (!includeGraph) {
+      // Don't include graph visualization at all
+      outputGraph = undefined;
+    } else if (!includeTags) {
+      // Include graph but without tags
+      outputGraph = {
+        ...graph,
+        tags: {},
+      };
+    }
+
     return {
-      graph: includeGraph ? graph : undefined,
+      graph: outputGraph,
       commits,
       summary,
     };
