@@ -165,12 +165,15 @@ export const getMarkdownTemplate = () => {
 `;
 };
 
-Handlebars.registerHelper('gitCommitHistoryAiPercentage', function (this: { gitCommitHistorySummary: { totalCommits: number; aiGeneratedCommits: number } }) {
-  const total = this.gitCommitHistorySummary?.totalCommits || 0;
-  const aiCount = this.gitCommitHistorySummary?.aiGeneratedCommits || 0;
-  if (total === 0) return '0';
-  return Math.round((aiCount / total) * 100).toString();
-});
+Handlebars.registerHelper(
+  'gitCommitHistoryAiPercentage',
+  function (this: { gitCommitHistorySummary: { totalCommits: number; aiGeneratedCommits: number } }) {
+    const total = this.gitCommitHistorySummary?.totalCommits || 0;
+    const aiCount = this.gitCommitHistorySummary?.aiGeneratedCommits || 0;
+    if (total === 0) return '0';
+    return Math.round((aiCount / total) * 100).toString();
+  },
+);
 
 Handlebars.registerHelper('getFileExtension', (filePath) => {
   const extension = filePath.split('.').pop()?.toLowerCase();

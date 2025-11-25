@@ -146,10 +146,7 @@ export const run = async () => {
         '--include-commit-history',
         'Include detailed git commit history analysis (includes graph, metadata, patches)',
       )
-      .option(
-        '--commit-range <range>',
-        'Commit range to analyze (e.g., HEAD~20..HEAD, v1.0..v2.0, main..feature)',
-      )
+      .option('--commit-range <range>', 'Commit range to analyze (e.g., HEAD~20..HEAD, v1.0..v2.0, main..feature)')
       .option(
         '--commit-patch-detail <level>',
         'Patch detail level: full (complete diffs), stat (file stats), files (names only), metadata (no diffs)',
