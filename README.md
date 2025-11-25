@@ -298,14 +298,14 @@ repomix --include-commit-history --commit-range HEAD~100..HEAD
 # Include commit patches with different detail levels
 repomix --include-commit-history --commit-patch-detail full  # full, stat, files, metadata
 
-# Enable commit message quality analysis and regression detection
+# Enable commit message format assessment and regression detection
 repomix --include-commit-history --analyze-commits
 
 # Disable specific components
 repomix --include-commit-history --no-commit-graph --no-git-tags
 ```
 
-The commit history feature provides commit metadata (hash, author, date, message, files), visual commit graph (ASCII + Mermaid diagram), git tags mapping, optional commit message quality analysis and regression detection, and configurable patch detail levels (full diffs, stats, file lists, or metadata only).
+The commit history feature provides commit metadata (hash, author, date, message, files), visual commit graph (ASCII + Mermaid diagram), git tags mapping, optional commit message format assessment and regression detection, and configurable patch detail levels (full diffs, stats, file lists, or metadata only).
 
 To compress the output:
 
@@ -656,7 +656,7 @@ Instruction
 - `--include-commit-history`: Include comprehensive git commit history analysis with graph, patches, and metadata
 - `--commit-range <range>`: Git commit range to analyze (default: HEAD~50..HEAD, e.g., "HEAD~100..HEAD" or "v1.0.0..HEAD")
 - `--commit-patch-detail <level>`: Patch detail level: full (complete diffs), stat (change statistics), files (filenames only), metadata (no patches) - default: stat
-- `--analyze-commits`: Enable commit message quality analysis and regression detection (assesses message quality and identifies potential bug fixes)
+- `--analyze-commits`: Enable commit message format assessment and regression detection (assesses message length, body presence, conventional format, and identifies potential bug fixes based on keywords)
 - `--no-commit-graph`: Disable commit graph visualization (ASCII art and Mermaid diagram)
 - `--no-git-tags`: Exclude git tags from commit history output
 - `--no-commit-patches`: Exclude commit patches (only include metadata: hash, author, date, message)
