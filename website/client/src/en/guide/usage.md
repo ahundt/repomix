@@ -117,6 +117,32 @@ This adds valuable context about:
 - **Commit history**: Recent commit messages provide insight into development focus
 - **File relationships**: Understanding which files are modified in the same commits
 
+### Commit History Analysis
+
+For comprehensive commit history analysis with AI detection and regression flagging:
+
+```bash
+# Full analysis with complete diffs (recommended for code review)
+repomix --include-commit-history --commit-patch-detail full --analyze-commits
+
+# Lighter analysis without diffs
+repomix --include-commit-history --commit-patch-detail metadata --analyze-commits
+
+# Analyze specific commit range
+repomix --include-commit-history --commit-range "v1.0..HEAD" --analyze-commits
+
+# Analyze feature branch
+repomix --include-commit-history --commit-range "main..feature-branch" --analyze-commits
+```
+
+This provides:
+- **Commit graph**: ASCII and Mermaid visualizations of branch structure
+- **AI detection**: Identifies AI-generated commits based on author patterns
+- **Regression flags**: Highlights commits that may introduce bugs (use as starting point for review)
+- **Full diffs**: Complete code changes when using `--commit-patch-detail full`
+
+See [Git Commit History Tips](/guide/tips/git-commit-history) for detailed usage patterns.
+
 ### Token Count Optimization
 
 Understanding your codebase's token distribution is crucial for optimizing AI interactions. Use the `--token-count-tree` option to visualize token usage across your project:

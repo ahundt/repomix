@@ -241,6 +241,49 @@ src/core/output/outputGenerate.ts
 2025-08-21 00:09:43 +0900|Merge pull request #795 from yamadashy/chore/ratchet-update-ci
 .github/workflows/ratchet-update.yml
 ```
+## Commit History Output
+
+When using `--include-commit-history`, the output includes detailed commit analysis:
+
+```xml
+<git_history>
+  <summary>
+    <total_commits>95</total_commits>
+    <ai_generated_commits>91</ai_generated_commits>
+    <potential_regressions>34</potential_regressions>
+    <range>v1.0..HEAD</range>
+  </summary>
+
+  <commit_graph>
+    <!-- ASCII and Mermaid visualizations -->
+  </commit_graph>
+
+  <commits>
+    <commit hash="abc123" ai_generated="true" potential_regression="false">
+      <author>Claude</author>
+      <date>2025-11-20T12:00:00Z</date>
+      <message>feat: Add new feature</message>
+      <analysis>
+        <ai_generated confidence="80">true</ai_generated>
+        <message_quality>good</message_quality>
+        <ai_indicators>
+          <indicator>AI email pattern: noreply@anthropic.com</indicator>
+        </ai_indicators>
+      </analysis>
+      <patch>
+        <!-- Diff content when using --commit-patch-detail full -->
+      </patch>
+    </commit>
+  </commits>
+</git_history>
+```
+
+**Patch Detail Levels:**
+- `full`: Complete diffs (largest output, best for code review)
+- `stat`: Change statistics only
+- `files`: Filenames only
+- `metadata`: No patches (smallest output)
+
 ## Usage with AI Models
 
 Each format works well with AI models, but consider:
